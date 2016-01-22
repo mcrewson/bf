@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+           "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blackflag.data.persist.WorkMapper">
+
+  <resultMap id="workMap" type="Work">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <association property="mediaType" column="media_type" javaType="MediaType" select="blackflag.data.persist.MediaTypeMapper.getMediaTypeById"/>
+  </resultMap>
+
+  <select id="getWorkById" parameterType="int" resultMap="workMap">
+    SELECT id, name, media_type FROM work WHERE id = #{id}
+  </select>
+
+  <select id="getWorkByName" parameterType="String" resultMap="workMap">
+    SELECT id, name, media_type FROM work WHERE name = #{name}
+  </select>
+
+
+</mapper>

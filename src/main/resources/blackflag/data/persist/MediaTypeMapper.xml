@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+           "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blackflag.data.persist.MediaTypeMapper">
+
+  <resultMap id="mediaTypeMap" type="MediaType">
+    <id property="id" column="id"/>
+    <result property="name" column="name"/>
+    <association property="parentType" column="parent_type" javaType="MediaType" select="getMediaTypeById"/>
+  </resultMap>
+
+  <select id="getMediaTypes" resultMap="mediaTypeMap">
+    SELECT mt.id as id,
+           mt.parent_type as parent_type,
+           mt.name as name
+     FROM  media_types mt
+  </select>
+
+  <select id="getMediaTypeByName" parameterType="String" resultMap="mediaTypeMap">
+    SELECT mt.id          as id,
+           mt.parent_type as parent_type,
+           mt.name        as name
+      FROM media_types mt
+     WHERE mt.name = #{name}
+  </select>
+
+  <select id="getMediaTypeById" parameterType="int" resultMap="mediaTypeMap">
+    SELECT mt.id          as id,
+           mt.parent_type as parent_type,
+           mt.name        as name
+      FROM media_types mt
+     WHERE mt.id = #{id}
+  </select>
+
+</mapper>

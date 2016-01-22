@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+           "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blackflag.data.persist.SystemMessageMapper">
+
+    <insert id="createSystemMessage" parameterType="SystemMessage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO system_messages (timestamp, reporter, content)
+        VALUES      (#{timestamp}, #{reporter}, #{content})
+    </insert>
+
+    <select id="getSystemMessages" resultType="SystemMessage">
+        SELECT sm.timestamp as timestamp,
+               sm.reporter AS reporter,
+               sm.content AS content
+        FROM   system_messages sm
+        ORDER BY sm.timestamp DESC
+    </select>
+
+</mapper>
