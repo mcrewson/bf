@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+           "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blackflag.data.persist.MetadataMapper">
+
+
+  <select id="getMetadataById" resultType="Metadata">
+    SELECT id, key, value FROM metadata WHERE id =#{id}
+  </select>
+
+  <select id="getAllMetadataForPerson" resultType="Metadata">
+    SELECT m.id    as id,
+           m.key   as key,
+           m.value as value
+      FROM metadata m
+      JOIN people_metadata pm ON m.id = pm.metadata_id
+     WHERE pm.person_id = #{person_id}
+  </select>
