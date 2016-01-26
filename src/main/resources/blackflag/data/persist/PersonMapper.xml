@@ -8,14 +8,14 @@
   <select id="getPersonById" parameterType="int" resultType="Person">
     SELECT id, name,
            sorted_name as sortedName
-      FROM person
+      FROM people
      WHERE id = #{id}
   </select>
 
   <select id="getPersonByName" parameterType="String" resultType="Person">
     SELECT id, name,
            sorted_name as sortedName
-      FROM person
+      FROM people
      WHERE name = #{name}
   </select>
 

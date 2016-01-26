@@ -12,11 +12,11 @@
   </resultMap>
 
   <select id="getWorkById" parameterType="int" resultMap="workMap">
-    SELECT id, name, media_type FROM work WHERE id = #{id}
+    SELECT id, name, media_type FROM works WHERE id = #{id}
   </select>
 
   <select id="getWorkByName" parameterType="String" resultMap="workMap">
-    SELECT id, name, media_type FROM work WHERE name = #{name}
+    SELECT id, name, media_type FROM works WHERE name = #{name}
   </select>
 
 
