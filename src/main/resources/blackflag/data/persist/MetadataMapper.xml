@@ -33,7 +33,7 @@
            m.key   as key,
            m.value as value
       FROM metadata m
-      JOIN work_metadata wm ON m.id = wm.metadata_id
+      JOIN works_metadata wm ON m.id = wm.metadata_id
      WHERE wm.work_id = #{work_id}
   </select>
 
@@ -42,7 +42,7 @@
            m.key   as key,
            m.value as value
       FROM metadata m
-      JOIN work_metadata wm ON m.id = wm.metadata_id
+      JOIN works_metadata wm ON m.id = wm.metadata_id
      WHERE wm.work_id = #{work_id}
        AND m.key = #{key}
   </select>

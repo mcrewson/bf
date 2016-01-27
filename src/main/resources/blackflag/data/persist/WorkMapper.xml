@@ -19,5 +19,17 @@
     SELECT id, name, media_type FROM works WHERE name = #{name}
   </select>
 
+  <select id="getWorkCreators" parameterType="int" resultType="Person">
+    SELECT p.id          as id,
+           p.name        as name,
+           p.sorted_name as sortedName
+      FROM people p
+      JOIN works_creators wc
+        ON wc.person_id = p.id
+     WHERE wc.work_id = #{id}
+  </select>
+
+  <select id="getWorkMetadata" parameterType="int" resultType="Metadata">
+  </select>
 
 </mapper>

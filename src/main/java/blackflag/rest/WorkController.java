@@ -6,6 +6,7 @@
 package blackflag.rest;
 
 import blackflag.data.Work;
+import blackflag.data.persist.MetadataMapper;
 import blackflag.data.persist.WorkMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,18 @@ public class WorkController
     @Autowired
     private WorkMapper workMapper;
 
+    @Autowired
+    private MetadataMapper metadataMapper;
+
     /* Public methods ---------------------------------------------------- */
 
     @RequestMapping(path="/{name}", method = RequestMethod.GET)
     public Work getWork (@PathVariable String name)
     {
-        return workMapper.getWorkByName(name);
+        Work w = workMapper.getWorkByName(name);
+        w.setCreators(workMapper.getWorkCreators(w.getId()));
+        w.setMetadata(metadataMapper.getAllMetadataForWork(w.getId()));
+        return w;
     }
 
 }

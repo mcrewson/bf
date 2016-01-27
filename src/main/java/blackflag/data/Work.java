@@ -6,6 +6,7 @@
 package blackflag.data;
 
 import org.apache.ibatis.type.Alias;
+import java.util.List;
 
 @Alias("Work")
 public class Work
@@ -17,6 +18,8 @@ public class Work
     private int id;
     private String name;
     private MediaType media_type;
+    private List<Person> creators;
+    private List<Metadata> metadata;
 
     /* Public methods ---------------------------------------------------- */
 
@@ -48,6 +51,26 @@ public class Work
     public void setMediaType (MediaType media_type)
     {
         this.media_type = media_type;
+    }
+
+    public List<Person> getCreators ()
+    {
+        return creators;
+    }
+
+    public void setCreators (List<Person> creators)
+    {
+        this.creators = creators;
+    }
+
+    public List<Metadata> getMetadata ()
+    {
+        return metadata;
+    }
+
+    public void setMetadata (List<Metadata> metadata)
+    {
+        this.metadata = metadata;
     }
 
 }

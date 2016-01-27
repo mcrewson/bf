@@ -5,7 +5,9 @@
 
 package blackflag.data.persist;
 
+import blackflag.data.Person;
 import blackflag.data.Work;
+import java.util.List;
 
 public interface WorkMapper
 {
@@ -13,6 +15,8 @@ public interface WorkMapper
 
     public Work getWorkById (int id);
     public Work getWorkByName (String name);
+
+    public List<Person> getWorkCreators (int id);
 
 }
 
