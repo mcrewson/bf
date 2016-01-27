@@ -11,7 +11,6 @@ import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 @SpringBootApplication
-@ImportResource("/applicationContext.xml")
 @PropertySource("/application.properties")
 public class Application
 {

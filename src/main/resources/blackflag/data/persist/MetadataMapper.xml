@@ -5,7 +5,6 @@
 
 <mapper namespace="blackflag.data.persist.MetadataMapper">
 
-
   <select id="getMetadataById" resultType="Metadata">
     SELECT id, key, value FROM metadata WHERE id =#{id}
   </select>
@@ -18,3 +17,34 @@
       JOIN people_metadata pm ON m.id = pm.metadata_id
      WHERE pm.person_id = #{person_id}
   </select>
+
+  <select id="getMetadataForPersonByKey" resultType="Metadata">
+    SELECT m.id    as id,
+           m.key   as key,
+           m.value as value
+      FROM metadata m
+      JOIN people_metadata pm ON m.id = pm.metadata_id
+     WHERE pm.person_id = #{person_id}
+       AND m.key = #{key}
+  </select>
+
+  <select id="getAllMetadataForWork" resultType="Metadata">
+    SELECT m.id    as id,
+           m.key   as key,
+           m.value as value
+      FROM metadata m
+      JOIN work_metadata wm ON m.id = wm.metadata_id
+     WHERE wm.work_id = #{work_id}
+  </select>
+
+  <select id="getMetadataForWorkByKey" resultType="Metadata">
+    SELECT m.id    as id,
+           m.key   as key,
+           m.value as value
+      FROM metadata m
+      JOIN work_metadata wm ON m.id = wm.metadata_id
+     WHERE wm.work_id = #{work_id}
+       AND m.key = #{key}
+  </select>
+
+</mapper>
