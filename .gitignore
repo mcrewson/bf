@@ -4,4 +4,4 @@ build
 *.data
 .*.swp
 
-V0_9999_sample.sql
+V0_9999__sample.sql
