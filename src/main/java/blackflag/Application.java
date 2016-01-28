@@ -8,10 +8,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Configuration;;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
-@Configuration
 @SpringBootApplication
-@PropertySource("/application.properties")
+@EnableScheduling
+//@PropertySource("/application.properties")
 public class Application
 {
     public static void main(String[] args)

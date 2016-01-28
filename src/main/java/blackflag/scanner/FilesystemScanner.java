@@ -5,8 +5,11 @@
 
 package blackflag.scanner;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -28,6 +31,10 @@ import java.util.List;
 public class FilesystemScanner
     extends SimpleFileVisitor<Path>
 {
+    /* Constants --------------------------------------------------------- */
+    
+    private static final Logger logger = LoggerFactory.getLogger(FilesystemScanner.class);
+
     /* Internal data ----------------------------------------------------- */
 
     @Value("${scanner.directory}")
@@ -50,11 +57,11 @@ public class FilesystemScanner
         }
         if (attrs.isSymbolicLink())
         {
-            //logger.debug(f.getAbsolutePath() + " <- Symbolic Link");
+            logger.info(f.getAbsolutePath() + " <- Symbolic Link");
         }
         else if (attrs.isRegularFile())
         {
-            //logger.debug(f.getAbsolutePath());
+            logger.info(f.getAbsolutePath());
 
             // do something with this file.
         }
@@ -65,14 +72,16 @@ public class FilesystemScanner
     public FileVisitResult visitFileFailed (Path file, IOException exc)
         throws IOException
     {
-        //logger.error(String.format("========== FAILED AT FILE: %s ==========", file.toFile().getAbsolutePath()));
+        logger.error(String.format("========== FAILED AT FILE: %s ==========", file.toFile().getAbsolutePath()));
         return FileVisitResult.CONTINUE;
     }
 
     /* Public methods ---------------------------------------------------- */
 
+    @Scheduled(fixedRate = 15000)
     public void scan ()
     {
+        logger.info("Starting filesystem scan...");
         try
         {
             Files.walkFileTree(Paths.get(directory), this);
