@@ -8,7 +8,7 @@ package blackflag.data.persist;
 import blackflag.data.File;
 import java.util.List;
 
-public interface FilesMapper
+public interface FileMapper
 {
     /* Public methods ---------------------------------------------------- */
 

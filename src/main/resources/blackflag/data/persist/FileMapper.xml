@@ -3,7 +3,7 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
            "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="blackflag.data.persist.FilesMapper">
+<mapper namespace="blackflag.data.persist.FileMapper">
 
   <select id="getFilesByName" resultType="File">
     SELECT name, location, timestamp, truncdigest, digest
