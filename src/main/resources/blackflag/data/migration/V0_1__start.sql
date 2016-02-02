@@ -10,6 +10,18 @@ CREATE TABLE system_messages (
 );
 CREATE INDEX system_messages_idx ON system_messages(timestamp);
 
+CREATE TABLE files (
+  name        TEXT,
+  location    TEXT,
+  timestamp   INTEGER,
+  truncdigest INTEGER,
+  digest      TEXT,
+
+  PRIMARY KEY(name,location)
+);
+CREATE INDEX files_truncdigest_idx   ON files(truncdigest);
+CREATE UNIQUE INDEX files_digest_idx ON files(digest);
+
 CREATE TABLE media_types (
   id          INTEGER PRIMARY KEY ASC,
   parent_type INTEGER,

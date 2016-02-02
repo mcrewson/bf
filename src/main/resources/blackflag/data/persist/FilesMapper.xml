@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper 
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+           "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="blackflag.data.persist.FilesMapper">
+
+  <select id="getFilesByName" resultType="File">
+    SELECT name, location, timestamp, truncdigest, digest
+      FROM files
+     WHERE name = #{name}
+  </select>
+
+  <select id="getFilesByTruncdigest" resultType="File">
+    SELECT name, location, timestamp, truncdigest, digest
+      FROM files
+     WHERE truncdigest = #{truncdigest}
+  </select>
+
+  <select id="getFileByNameAndLocation" resultType="File">
+    SELECT name, location, timestamp, truncdigest, digest
+      FROM files
+     WHERE name = #{name}
+       AND location = #{location}
+  </select>
+
+  <select id="getFileByDigest" resultType="File">
+    SELECT name, location, timestamp, truncdigest, digest
+      FROM files
+     WHERE digest = #{digest}
+  </select>
+
+</mapper>
