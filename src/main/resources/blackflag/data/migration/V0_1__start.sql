@@ -3,6 +3,11 @@
 
 PRAGMA foreign_keys = ON;
 
+CREATE TABLE system_configuration (
+  parameter TEXT PRIMARY KEY,
+  value     TEXT
+);
+
 CREATE TABLE system_messages (
   timestamp INTEGER,
   reporter  TEXT,
@@ -19,6 +24,7 @@ CREATE TABLE files (
 
   PRIMARY KEY(name,location)
 );
+CREATE INDEX files_name_idx          ON files(name);
 CREATE INDEX files_truncdigest_idx   ON files(truncdigest);
 CREATE UNIQUE INDEX files_digest_idx ON files(digest);
 
