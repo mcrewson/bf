@@ -6,47 +6,42 @@ package blackflag;
 import blackflag.data.SystemConfiguration;
 import blackflag.data.persist.SystemConfigurationMapper;
 
+import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
+
+import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertiesPropertySource;
+import org.springframework.core.env.PropertySource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import javax.annotation.PostConstruct;
 
 @Configuration
 public class AppConfiguration
 {
 
+    /* Internal data ------------------------------------------------------ */
+
     @Autowired
     private Environment env;
 
     @Autowired
+    private DataSource dataSource;
+
+    @Autowired
     private SystemConfigurationMapper systemConfigurationMapper;
+
+    /* Public methods ----------------------------------------------------- */
 
     @PostConstruct
     public void initializeDatabasePropertySourceUsage ()
     {
+        flyway().migrate();
         MutablePropertySources propertySources = ((ConfigurableEnvironment)env).getPropertySources();
-        try
-        {
-            Properties dbProps = getAllSystemConfigurationAsProperties();
-            PropertiesPropertySource dbPropertySource = new PropertiesPropertySource("dbPropertySource", dbProps);
-
-            propertySources.addFirst(dbPropertySource);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
+        propertySources.addFirst(dbPropertySource(systemConfigurationMapper));
     }
 
     @Bean
@@ -55,17 +50,40 @@ public class AppConfiguration
         return new PropertySourcesPlaceholderConfigurer();
     }
 
-    private Properties getAllSystemConfigurationAsProperties ()
+    @Bean
+    public DbPropertySource dbPropertySource (SystemConfigurationMapper mapper)
     {
-        Properties results = new Properties();
-        List<SystemConfiguration> sysconfigs = systemConfigurationMapper.getAllSystemConfigurations();
-        for (SystemConfiguration sysconfig : sysconfigs)
+        return new DbPropertySource("dbPropertySource", mapper);
+    }
+
+    @Bean
+    public Flyway flyway()
+    {
+        Flyway flyway = new Flyway();
+        flyway.setDataSource(dataSource);
+        flyway.setLocations("classpath:blackflag/data/migration");
+        flyway.setPlaceholderPrefix("#{");
+        return flyway;
+    }
+
+    /* Internal classes --------------------------------------------------- */
+
+    private static class DbPropertySource
+        extends PropertySource<SystemConfigurationMapper>
+    {
+        public DbPropertySource (String name, SystemConfigurationMapper source)
         {
-            results.setProperty(sysconfig.getParameter(), sysconfig.getValue());
+            super(name, source);
         }
-        return results;
+
+        @Override
+        public Object getProperty (String name)
+        {
+            SystemConfiguration param = this.source.getSystemConfiguration(name);
+            return param == null ? null : param.getValue();
+        }
     }
 
 }
 
-/* THE END */
+// THE END

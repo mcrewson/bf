@@ -4,4 +4,6 @@ build
 *.data
 .*.swp
 
+config/
+
 V0_9999__sample.sql
