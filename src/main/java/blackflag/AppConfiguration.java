@@ -61,7 +61,7 @@ public class AppConfiguration
     {
         Flyway flyway = new Flyway();
         flyway.setDataSource(dataSource);
-        flyway.setLocations("classpath:blackflag/data/migration");
+        flyway.setLocations("classpath:migrations");
         flyway.setPlaceholderPrefix("#{");
         return flyway;
     }
