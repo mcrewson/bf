@@ -8,7 +8,7 @@ package blackflag.scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +16,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.List;
 
 /**
  * TODO: document FilesystemScanner class
@@ -35,13 +36,14 @@ public class FilesystemScanner
     
     private static final Logger logger = LoggerFactory.getLogger(FilesystemScanner.class);
 
+    private static final String DEFAULT_SCANNER_EXTENSIONS = "epub,mobi";
+
     /* Internal data ----------------------------------------------------- */
 
-    @Value("${scanner.directory}")
-    private String directory;
+    @Autowired
+    private Environment env;
 
-    @Value("#{'${scanner.extensions}'.split(',')}")
-    private List<String> extensions;
+    private PathMatcher pathMatcher;
 
     /* SimpleFileVisitor implementation ---------------------------------- */
 
@@ -49,12 +51,12 @@ public class FilesystemScanner
     public FileVisitResult visitFile (Path file, BasicFileAttributes attrs)
         throws IOException
     {
-        File f = file.toFile();
-        String extension = getExtension(f.getName());
-        if (!extensions.contains(extension.toLowerCase()))
+        if (! pathMatcher.matches(file.getFileName()))
         {
             return FileVisitResult.CONTINUE;
         }
+
+        File f = file.toFile();
         if (attrs.isSymbolicLink())
         {
             logger.info(f.getAbsolutePath() + " <- Symbolic Link");
@@ -81,10 +83,25 @@ public class FilesystemScanner
     @Scheduled(fixedRate = 15000)
     public void scan ()
     {
+        String scannerpath = env.getProperty("scanner.directory");
+        if (scannerpath == null)
+        {
+            logger.error("Cannot start filesystem scan. no directory specified.");
+            return;
+        }
+        Path directory = Paths.get(scannerpath);
+        if (! directory.toFile().isDirectory())
+        {
+            logger.error(String.format("Cannot start filesystem scan. Directory does not exist: %s", directory.toFile().getAbsolutePath()));
+            return;
+        }
+
+        setupPathMatcher();
+
         logger.info("Starting filesystem scan...");
         try
         {
-            Files.walkFileTree(Paths.get(directory), this);
+            Files.walkFileTree(directory, this);
         }
         catch (IOException e)
         {
@@ -94,41 +111,22 @@ public class FilesystemScanner
 
     /* Private methods ---------------------------------------------------- */
 
-    private static int indexOfLastSeparator (final String filename)
+    private void setupPathMatcher ()
     {
-        if (filename == null) {
-            return -1;
+        String extensions = env.getProperty("scanner.extensions");
+        if (extensions == null)
+        {
+            extensions = DEFAULT_SCANNER_EXTENSIONS;
         }
-        final int lastUnixPos = filename.lastIndexOf('/');
-        final int lastWindowsPos = filename.lastIndexOf('\\');
-        return Math.max(lastUnixPos, lastWindowsPos);
-    }
+        String[] exts = extensions.split(",");
+        for (int i=0; i < exts.length; i++)
+        {
+            exts[i] = exts[i].trim();
+        }
+        String pattern = String.format("glob:*.{%s}", String.join(",", exts));
+        logger.info(String.format("Should find any file matching this pattern -- %s", pattern));
 
-    private static int indexOfExtension (final String filename)
-    {
-        if (filename == null) {
-            return -1;
-        }
-        final int extensionPos = filename.lastIndexOf(".");
-        final int lastSeparator = indexOfLastSeparator(filename);
-        return lastSeparator > extensionPos ? -1 : extensionPos;
-    }
-
-    protected static String getExtension (final String filename)
-    {
-        if (filename == null)
-        {
-            return null;
-        }
-        final int index = indexOfExtension(filename);
-        if (index == -1)
-        {
-            return "";
-        }
-        else
-        {
-            return filename.substring(index + 1);
-        }
+        pathMatcher = FileSystems.getDefault().getPathMatcher(pattern);
     }
 
 }
